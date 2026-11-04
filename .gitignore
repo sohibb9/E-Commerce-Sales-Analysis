@@ -1,0 +1,12 @@
+# Dataset
+data.csv
+
+# Backup files
+Backup/
+
+# Python temporary files
+__pycache__/
+.ipynb_checkpoints/
+
+# Virtual environments
+.venv/
