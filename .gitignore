@@ -1,12 +1,20 @@
-# Dataset
+# Raw and local analysis files (not for the public repository)
 data.csv
-
-# Backup files
+sales_cleaned.csv
 Backup/
 
-# Python temporary files
-__pycache__/
-.ipynb_checkpoints/
-
-# Virtual environments
+# Local Python / IDE artifacts
 .venv/
+venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.pytest_cache/
+.vscode/
+.idea/
+.env
+.env.*
+
+# Windows / macOS files
+Thumbs.db
+.DS_Store
