@@ -1,119 +1,221 @@
 # E-Commerce Sales Analysis & Interactive Dashboard
 
-**Python · Pandas · Seaborn · Altair · Streamlit**
+**End-to-end data analysis with Python, Pandas, Seaborn, Altair, and Streamlit**
 
-A portfolio project that cleans a real Online Retail transactional dataset, documents analytical assumptions, calculates business KPIs, and presents a filterable dashboard. The Jupyter notebook shows the analysis; the Streamlit app presents the results to nontechnical users.
+This project explores real transaction data from a UK-based online retailer. It covers data quality checks, cleaning, exploratory analysis, business KPIs, and an interactive dashboard that lets users explore sales by date, country, and product.
 
-**Sources:** [UCI Online Retail](https://archive.ics.uci.edu/dataset/352/online-retail) ([DOI: 10.24432/C5BW33](https://doi.org/10.24432/C5BW33)) · [Kaggle mirror](https://www.kaggle.com/datasets/carrie1/ecommerce-data)  
-**Covered period:** December 2010–December 2011 (**December 2011 is incomplete**)  
-**Dashboard:** Add your `https://<your-app>.streamlit.app` link here after deployment.
+**[🚀 Open the Live Dashboard](https://sohaib-fp1-ecommerce-analytics.streamlit.app/)** · **[📓 View the Analysis Notebook](ecommerce_sales_analysis_final.ipynb)** · **[📊 GitHub Repository](https://github.com/sohibb9/E-Commerce-Sales-Analysis)**
 
-## KPI summary (all countries, full date range)
+---
 
-| Metric | Value |
-| --- | ---: |
-| Total sales revenue | **£10,642,110.80** |
-| Distinct orders | **19,960** |
-| Known customers | **4,338** |
-| Unique stock codes (including service codes) | **3,922** |
-| Average order value (AOV) | **£533.17** |
-| Final sales rows after removing exact duplicates | **524,878** |
+## Project overview
 
-The KPIs are based on a **filtered, deduplicated, sales-only** scenario; they are *not* profits or all net transactions. Known customers exclude records without `CustomerID`. AOV is total sales revenue divided by distinct invoices, not the mean of line items.
+The objective is to turn raw retail transactions into useful business insights and an easy-to-use analytics dashboard. The analysis answers questions such as:
 
-## Dashboard features
+- How much sales revenue did the business generate, and how did it change over time?
+- Which countries contributed the most revenue?
+- Which products generated the most revenue?
+- Who were the highest-spending and most frequent **identified** customers?
+- How do sales patterns change when filtering by country or date?
 
-- Country and inclusive date filters that update every KPI and chart.
-- Revenue, distinct orders, known customers and AOV.
-- Monthly revenue trend and top countries, with same-height chart panels.
-- Product ranking table **on the left**, horizontal product chart **on the right**, with a static table to avoid mouse-wheel scrolling inside it.
-- Collapsed dataset preview and explanation of filtering assumptions.
+**Dataset:** [Online Retail — UCI Machine Learning Repository](https://archive.ics.uci.edu/dataset/352/online+retail) ([Kaggle CSV mirror](https://www.kaggle.com/datasets/carrie1/ecommerce-data))  
+**Period:** December 1, 2010–December 9, 2011  
+**Currency:** GBP (£)  
+**Original dataset:** 541,909 transaction lines
 
-Charts are rendered with Altair **without scroll-wheel zoom**. This is intentionally a single-page dashboard.
+> **Scope:** The reported KPIs describe *positive-quantity, positive-price, non-cancellation sales after exact duplicate removal*. Revenue is **not** profit, and it does **not** represent full net revenue after returns.
 
-## Cleaning decisions and limitations
+## Results at a glance
 
-1. Exclude cancellation invoice IDs beginning with `C`, nonpositive quantities and nonpositive prices.
-2. Compute `TotalPrice = Quantity × UnitPrice` in GBP.
-3. Remove 5,226 exact duplicate copies as a documented analytical assumption (not all identical lines are necessarily errors). This changes pre-deduplication sales-only revenue by **£24,573.74** (about **0.23%**).
-4. Keep missing customer IDs in revenue/order KPIs; there are **132,186** such rows after deduplication. Exclude them only from distinct-customer analysis.
-5. Exclude `DOT`, `POST` and `M` from **product rankings**, but retain them in total revenue. Other non-product codes may exist.
-6. Treat December 2011 as a *partial month*. No costs are available to calculate profit.
+Results below use the **full date range and all countries**, matching the cleaned notebook and the dashboard's default filters.
 
-**Highlights:** The UK is the leading revenue market. November 2011 is the highest-revenue complete month in the dataset. Product rankings by revenue and by quantity answer different questions. Customer-spending rankings differ from order-frequency rankings.
+| Metric | Result |
+|:---|---:|
+| **Total sales revenue** | **£10,642,110.80** |
+| **Distinct orders** | **19,960** |
+| **Known customers** | **4,338** |
+| **Average order value (AOV)** | **£533.17** |
+| **Sales rows after cleaning** | **524,878** |
+| **Unique stock codes** | **3,922** |
+
+**Metric definitions**
+
+- **Revenue:** Sum of `Quantity × UnitPrice` for retained sales rows.
+- **Orders:** Number of unique `InvoiceNo` values, not the number of individual line items.
+- **Known customers:** Unique, non-missing `CustomerID` values; missing customer IDs remain in revenue and order calculations.
+- **AOV:** Total sales revenue / distinct orders.
+- **Unique stock codes:** Includes some non-product/service codes; these are handled separately in product rankings.
+
+## Key findings
+
+- **The United Kingdom dominates revenue**, contributing approximately **84.6%** of the analyzed sales total.
+- **November 2011** had the highest monthly revenue among the complete months covered, at approximately **£1.50 million**.
+- The top product description by revenue was **REGENCY CAKESTAND 3 TIER**, generating approximately **£174,156.54** under the product-ranking rules.
+- Customer value and customer frequency are different measures: top spenders are not necessarily the customers who placed the most orders.
+- The data ends on **December 9, 2011**. December 2011 is incomplete, so its monthly total should not be compared directly with a full month.
+
+### Sample analysis charts
+
+The notebook produces six figures in the [`figures/`](figures/) directory. Here are two examples:
+
+**Monthly revenue trend**
+
+![Monthly sales revenue trend](figures/monthly_revenue_trend.png)
+
+**Top countries by revenue**
+
+![Top countries by sales revenue](figures/top_countries_revenue.png)
+
+For interactive visualizations and filters, use the **[live dashboard](https://sohaib-fp1-ecommerce-analytics.streamlit.app/)**.
+
+## Interactive dashboard
+
+The Streamlit dashboard provides:
+
+- **Four live KPIs:** revenue, orders, known customers, and AOV.
+- **Country and date filters** that update the KPIs and charts together. An empty country selection means all countries.
+- **Monthly revenue trend** and **top 10 countries by revenue**, presented in balanced, side-by-side charts.
+- **Top 10 products by revenue**, with a ranking table on the left and a horizontal bar chart on the right.
+- **Dataset preview and methodology notes** in a collapsible section.
+- **Responsive Altair charts** without mouse-wheel zoom, plus a static product table to avoid nested scrolling.
+
+**Live app:** https://sohaib-fp1-ecommerce-analytics.streamlit.app/
+
+## Data preparation and analytical assumptions
+
+The cleaning and transformation steps are documented in [`ecommerce_sales_analysis_final.ipynb`](ecommerce_sales_analysis_final.ipynb).
+
+1. **Filter sales:** Exclude invoice IDs beginning with `C` (cancellations), `Quantity <= 0`, and `UnitPrice <= 0`.
+2. **Calculate line revenue:** `TotalPrice = Quantity * UnitPrice`.
+3. **Remove exact duplicate rows:** Remove **5,226** duplicate copies from the sales-only data. This reduces calculated sales revenue by **£24,573.74** (approximately **0.23%**). Identical transaction lines are not necessarily data-entry errors, so this is an explicit analytical assumption.
+4. **Handle missing customer IDs:** Keep **132,186** rows with missing `CustomerID` in sales totals; exclude their missing IDs from customer-level counts and rankings only.
+5. **Distinguish products from fees/services:** Exclude `DOT`, `POST`, and `M` from product rankings, but retain their values in overall revenue. Other special codes may still exist.
+6. **Preserve invoice identifiers as strings:** This avoids inconsistent counts caused by mixed numeric/text parsing of `InvoiceNo`.
+7. **Export the dashboard dataset:** Save a compressed `sales_dashboard.csv.gz` with replaced invoice and customer identifiers. The original cleaned notebook data remains separate.
+
+The dashboard is a **descriptive sales analysis**, not a profitability model. Costs, margins, and full refund accounting are not available here.
+
+## Technology stack
+
+| Tool | Purpose |
+|:---|:---|
+| Python | Data processing and application logic |
+| Pandas | Cleaning, grouping, KPI calculations, and filtering |
+| Matplotlib & Seaborn | Exploratory analysis and saved notebook charts |
+| Altair | Interactive dashboard visualizations |
+| Streamlit | Web dashboard and user-facing filters |
+| Jupyter Notebook | Reproducible analysis and documented decisions |
+| Git & GitHub | Version control and project hosting |
+| Streamlit Community Cloud | Live app hosting |
+
+## Project structure
+
+```text
+E-Commerce-Sales-Analysis/
+├── app.py                             # Streamlit dashboard
+├── dashboard_utils.py                 # Data loading, validation, and KPIs
+├── ecommerce_sales_analysis_final.ipynb
+├── sales_dashboard.csv.gz             # Compressed dashboard data extract
+├── figures/                           # Six charts generated by the notebook
+│   ├── monthly_revenue_trend.png
+│   ├── monthly_order_volume.png
+│   ├── top_countries_revenue.png
+│   ├── top_products_revenue.png
+│   ├── top_customers_spending.png
+│   └── top_customers_frequency.png
+├── tests/
+│   └── smoke_test.py                  # Data, KPI, and aggregation checks
+├── requirements.txt
+├── .gitignore
+└── README.md
+```
+
+Local-only files such as `data.csv`, `sales_cleaned.csv`, `Backup/`, and `.venv/` are intentionally not tracked in this repository.
 
 ## Run the dashboard locally
 
-Use Python 3.11+ and run commands from the repository directory. Windows CMD example:
+**Requirements:** Python 3.11 or newer, with Git optional if you download the repository as a ZIP.
 
-```bat
-cd /d "E:\05-Projects\Data Analysis\E-Commerce-Sales-Analysis"
+```bash
+git clone https://github.com/sohibb9/E-Commerce-Sales-Analysis.git
+cd E-Commerce-Sales-Analysis
 python -m venv .venv
+```
+
+Activate the environment:
+
+**Windows CMD:**
+
+```cmd
 .venv\Scripts\activate
+```
+
+**macOS / Linux:**
+
+```bash
+source .venv/bin/activate
+```
+
+Install dependencies and start the dashboard:
+
+```bash
 python -m pip install -r requirements.txt
 python -m streamlit run app.py
 ```
 
-Open the local URL shown by Streamlit (usually `http://localhost:8501`). The dashboard works with the **included** `sales_dashboard.csv.gz` file; you do not need raw `data.csv` just to view the app.
+The app usually opens at **http://localhost:8501**. It uses the included `sales_dashboard.csv.gz`, so **you do not need to download the raw CSV just to run the dashboard**.
 
-To test without opening a browser:
+### Run the smoke test
 
-```bat
-python tests\smoke_test.py
+```bash
+python tests/smoke_test.py
 ```
 
-## Reproduce the Jupyter analysis and figures
-
-1. Download the original `data.csv` from the [Kaggle mirror](https://www.kaggle.com/datasets/carrie1/ecommerce-data) (or UCI original, converting XLSX to CSV with the equivalent schema as needed).
-2. Place `data.csv` in the **repository root** beside the notebook. The file is intentionally excluded from GitHub with `.gitignore`.
-3. Open `ecommerce_sales_analysis_final.ipynb` in VS Code/Jupyter **with the repository as working directory** and run all cells.
-4. The notebook reproduces revenue/customer/order calculations, saves six PNG figures to `figures/`, and at the end exports and verifies a new `sales_dashboard.csv.gz` extract. The export creates fresh random pseudonyms every time, so the binary file changes even when business KPIs do not.
-5. Run `python tests/smoke_test.py` before publishing changes.
-
-## Repository structure
+Expected test summary:
 
 ```text
-E-Commerce-Sales-Analysis/
-├── app.py                            # Streamlit UI
-├── dashboard_utils.py                # reusable calculations & data validation
-├── sales_dashboard.csv.gz            # compressed, pseudonymized extract for the app
-├── ecommerce_sales_analysis_final.ipynb
-├── figures/                          # six saved analysis charts
-├── tests/
-│   └── smoke_test.py
-├── README.md
-├── requirements.txt
-└── .gitignore
+PASS: dataset, privacy checks, KPIs, filters, charts and aggregations
+Revenue £10,642,110.80; 19,960 orders; 4,338 customers
 ```
 
-The original local-only `data.csv`, `sales_cleaned.csv`, `Backup/`, `.venv/` and `.git/` are **not distributed in the public-ready ZIP**. Never replace the `.git` folder of your existing repository.
+This test checks the data extract, identifier format, core KPIs, filtering, and aggregation results; it is **not** an automated browser/UI test.
 
-## Deploy on Streamlit Community Cloud
+## Reproduce the notebook analysis
 
-1. Copy the updated files into your **existing** local Git repository (do not delete its `.git/` folder).
-2. Verify `git status` does not include raw customer files or a local virtual environment. Then:
+The Streamlit app and the notebook have different input requirements.
 
-   ```bat
-   git add app.py dashboard_utils.py ecommerce_sales_analysis_final.ipynb README.md requirements.txt .gitignore figures tests sales_dashboard.csv.gz
-   git commit -m "Polish analysis and deploy-ready Streamlit dashboard"
-   git push
-   ```
+1. Download the original `data.csv` from the [Kaggle CSV mirror](https://www.kaggle.com/datasets/carrie1/ecommerce-data). The [UCI source](https://archive.ics.uci.edu/dataset/352/online+retail) distributes the original data as an Excel file; if using UCI directly, convert it to the expected CSV schema first.
+2. Put `data.csv` at the **root of this project**, next to the notebook.
+3. Open [`ecommerce_sales_analysis_final.ipynb`](ecommerce_sales_analysis_final.ipynb) in Jupyter or VS Code and run its cells in order **from the project root**.
+4. The notebook performs cleaning, creates KPIs and analysis charts, exports `sales_dashboard.csv.gz`, and validates the export.
+5. Run the smoke test to verify the data used by the dashboard.
 
-3. Open [Streamlit Community Cloud](https://share.streamlit.io/), choose **Create app**, select your GitHub repository `sohibb9/E-Commerce-Sales-Analysis`, `main` branch and `app.py` as the entrypoint. Deploy and check that the four KPIs match the table above.
-4. Add the deployed URL to the top of this README and to your portfolio. Deployment is **not automatic** until you connect your GitHub repository to Streamlit Cloud.
+The notebook regenerates **random pseudonymous identifiers** during export. This can change the compressed file's binary contents even when its revenue, order, and customer totals remain identical.
 
-## Dataset attribution and privacy
+## Deployment and updates
 
-Original dataset: **Chen, D. (2015), Online Retail, UCI Machine Learning Repository**, [DOI: 10.24432/C5BW33](https://doi.org/10.24432/C5BW33). UCI lists the dataset under **Creative Commons Attribution 4.0 (CC BY 4.0)**; credit is required when sharing derived data. The Kaggle mirror's license field is listed as unknown, so attribution here relies on the documented UCI origin. The dashboard extract was cleaned, deduplicated and transformed from the original; it replaces the original invoice and customer IDs with random pseudonyms, but **is not fully anonymized** (transaction details may still be linked to the public source). The compressed extract is shared only for the dashboard demonstration. Do not publish private client datasets in this manner.
+The dashboard is deployed on **[Streamlit Community Cloud](https://share.streamlit.io/)** from this repository's `main` branch, using `app.py` as the entry point.
 
+To publish future changes after reviewing them locally:
 
-## Dataset Attribution
+```bash
+git status
+git add app.py dashboard_utils.py ecommerce_sales_analysis_final.ipynb README.md requirements.txt .gitignore figures/ tests/ sales_dashboard.csv.gz
+git commit -m "Update e-commerce analysis and dashboard"
+git push
+```
 
-Dataset: Online Retail
-Creator: Daqing Chen (2015)
-Source: UCI Machine Learning Repository
-DOI: https://doi.org/10.24432/C5BW33
-License: CC BY 4.0
+Updates pushed to the connected branch normally trigger a Streamlit app redeployment. Changing only the README updates the GitHub project page and does not change the dashboard's appearance.
 
-The dashboard uses a cleaned, compressed version
-with pseudonymized invoice and customer identifiers.
+## Data source, attribution, and privacy
+
+**Original dataset citation:**  
+Chen, D. (2015). *Online Retail* [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C5BW33
+
+The [UCI dataset page](https://archive.ics.uci.edu/dataset/352/online+retail) lists a **Creative Commons Attribution 4.0 International (CC BY 4.0)** license. The data used here is derived from the original dataset by filtering sales, dropping exact duplicates, calculating line revenue, selecting columns, and replacing invoice/customer identifiers.
+
+The published extract uses **pseudonymization, not guaranteed anonymization**: detailed transactions could potentially be matched against the original public dataset. Do not apply the same sharing approach to private customer or client data without a separate privacy and permissions review.
+
+---
+
+**Project by [Sohaib Mohamed](https://github.com/sohibb9)** · [GitHub repository](https://github.com/sohibb9/E-Commerce-Sales-Analysis) · [Live dashboard](https://sohaib-fp1-ecommerce-analytics.streamlit.app/)
